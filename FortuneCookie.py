@@ -4,6 +4,7 @@ import streamlit as st
 from openai import OpenAI
 from dotenv import load_dotenv
 from app_config import *
+from UI.message_func import message_format
 
 # load_dotenv()
 os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
@@ -58,29 +59,23 @@ def generate_response(prompt):
 # Adding an image to the sidebar
 st.sidebar.image('https://www.redpathsugar.com/sites/redpathsugar_com/files/styles/m/public/Fortune_Cookies_500x400.jpg.webp?itok=-cFGivMC')
 # st.sidebar.image('https://source.unsplash.com/1600x900/?lucky Cookie', caption='Fortune Cookie')
-st.sidebar.title("🥠 Fortune Cookie")
+st.sidebar.title("Fortune Cookie")
 if st.sidebar.button('Get my fortune!'):
     fortune = generate_fortune()
-    st.sidebar.success(fortune)
+    st.sidebar.success(fortune, icon="🥠")
 
 # Main page for comforting chat
 st.title('ECHO')
 st.subheader('Always Here, Always Ready to Hear you')
-# user_input = st.text_input("How are you feeling today?", "")
-# if st.button('Talk to me'):
-#     response = generate_response(user_input)
-#     st.info(response)
 
 if "messages" not in st.session_state:
         st.session_state["messages"] = [{"role": "assistant", "content": "Hi! I am Echo. How are you feeling today?"}]
 
-for msg in st.session_state.messages:
-    st.chat_message(msg["role"]).write(msg["content"])
-
 if prompt := st.chat_input():
 
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    st.chat_message("user").write(prompt)
+    st.session_state.messages.append({"role": "user", 'avatar':'user_avatar', "content": prompt})
     msg = generate_response(prompt)
-    st.session_state.messages.append({"role": "assistant", "content": msg})
-    st.chat_message("assistant").write(msg)
+    st.session_state.messages.append({"role": "assistant", 'avatar':'bot_avatar', "content": msg})
+
+for msg in st.session_state.messages:
+    message_format(msg)
